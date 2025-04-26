@@ -25,9 +25,61 @@ IRIS-Forensic X combine une interface CLI puissante, une interface graphique int
 - Résolution d'écran : 1920x1080 ou supérieure
 - Connexion Internet : Requise pour l'installation initiale et les mises à jour
 
-## Installation
+## Installation depuis GitHub
 
-Consultez le [Guide d'installation](docs/guide_installation.md) pour des instructions détaillées sur l'installation d'IRIS-Forensic X.
+### Méthode 1 : Clonage du dépôt et installation manuelle
+
+1. **Cloner le dépôt GitHub**
+   ```
+   git clone https://github.com/servais1983/iris-forensic-x.git
+   cd iris-forensic-x
+   ```
+
+2. **Installer les dépendances requises**
+   ```
+   # Installer Python et les dépendances Python
+   python -m pip install -r requirements.txt
+   
+   # Installer les dépendances .NET (si non installées)
+   # Télécharger et installer .NET SDK 6.0 ou supérieur depuis https://dotnet.microsoft.com/download
+   ```
+
+3. **Compiler l'application Windows**
+   ```
+   cd windows
+   # Utiliser Visual Studio ou MSBuild pour compiler la solution
+   # Exemple avec MSBuild :
+   msbuild IRIS.sln /p:Configuration=Release
+   ```
+
+4. **Exécuter l'installateur**
+   ```
+   cd installer
+   install.bat
+   ```
+
+### Méthode 2 : Téléchargement et installation du package MSI
+
+1. **Télécharger le package d'installation**
+   - Accéder à la section "Releases" du dépôt GitHub
+   - Télécharger le fichier MSI le plus récent
+
+2. **Exécuter l'installateur MSI**
+   - Double-cliquer sur le fichier MSI téléchargé
+   - Suivre les instructions à l'écran pour terminer l'installation
+
+### Méthode 3 : Script d'installation automatisé
+
+1. **Télécharger le script d'installation**
+   ```
+   curl -o install_iris.bat https://raw.githubusercontent.com/servais1983/iris-forensic-x/main/windows/installer/install.bat
+   ```
+
+2. **Exécuter le script d'installation**
+   ```
+   install_iris.bat
+   ```
+   Ce script téléchargera automatiquement tous les composants nécessaires et installera l'application.
 
 ## Documentation
 
@@ -59,6 +111,20 @@ IRIS-Forensic X est construit selon une architecture modulaire qui comprend :
 - **ai/** - Modèles et services d'intelligence artificielle
 - **blockchain/** - Intégration et certification blockchain
 - **docs/** - Documentation complète
+
+## Résolution des problèmes courants
+
+### Erreur "ModuleNotFoundError: No module named 'PyQt5'"
+Si vous rencontrez cette erreur lors de l'installation, exécutez la commande suivante :
+```
+python -m pip install PyQt5
+```
+
+### Problèmes d'accès aux fichiers VMDK
+Assurez-vous que l'application est exécutée avec des privilèges administratifs pour accéder aux fichiers VMDK.
+
+### Erreurs de compilation de l'application Windows
+Vérifiez que vous avez installé .NET SDK 6.0 ou supérieur et que tous les packages NuGet sont correctement restaurés.
 
 ## Licence
 
