@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="IRIS-Forensic X" Language="1033" Version="1.0.0.0" Manufacturer="IRIS-Forensic X" UpgradeCode="6a4e9df0-5c9a-4b7c-a3c9-9e4f1d8c2b3a">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="Une version plus récente de [ProductName] est déjà installée." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="IRIS-Forensic X" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ProductShortcuts" />
+    </Feature>
+
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+
+    <InstallExecuteSequence>
+      <Custom Action="InstallPythonDependencies" After="InstallFiles">NOT Installed</Custom>
+    </InstallExecuteSequence>
+
+    <CustomAction Id="InstallPythonDependencies" 
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="[INSTALLFOLDER]install_dependencies.bat"
+                  Return="check"
+                  Execute="deferred"
+                  Impersonate="no" />
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="IRIS-Forensic X">
+          <Directory Id="BinDir" Name="bin" />
+          <Directory Id="CoreCLIDir" Name="CoreCLI" />
+          <Directory Id="AIModelsDir" Name="AIModels" />
+          <Directory Id="YaraRulesDir" Name="YaraRules" />
+          <Directory Id="TemplatesDir" Name="Templates" />
+          <Directory Id="DocsDir" Name="Docs" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="IRIS-Forensic X" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductComponent" Guid="*">
+        <File Id="IRISForensicXExe" Source="$(var.IRIS.Windows.TargetPath)" KeyPath="yes" />
+        <File Id="InstallDependenciesBat" Source="install_dependencies.bat" />
+        <File Id="UninstallBat" Source="uninstall.bat" />
+        <File Id="ConfigJson" Source="config.json" />
+      </Component>
+      
+      <!-- Composants pour les fichiers binaires -->
+      <Component Id="BinComponent" Directory="BinDir" Guid="*">
+        <File Id="YaraExe" Source="bin\yara.exe" KeyPath="yes" />
+        <!-- Autres fichiers binaires -->
+      </Component>
+      
+      <!-- Composants pour le Core CLI -->
+      <Component Id="CoreCLIComponent" Directory="CoreCLIDir" Guid="*">
+        <File Id="IRISExe" Source="CoreCLI\iris.exe" KeyPath="yes" />
+        <!-- Autres fichiers du Core CLI -->
+      </Component>
+      
+      <!-- Composants pour les modèles d'IA -->
+      <Component Id="AIModelsComponent" Directory="AIModelsDir" Guid="*">
+        <File Id="ThreatDetectionModel" Source="AIModels\threat_detection.onnx" KeyPath="yes" />
+        <!-- Autres modèles d'IA -->
+      </Component>
+      
+      <!-- Composants pour les règles YARA -->
+      <Component Id="YaraRulesComponent" Directory="YaraRulesDir" Guid="*">
+        <File Id="LockBitRule" Source="YaraRules\LockBit_Ransomware.yar" KeyPath="yes" />
+        <File Id="PersistenceRule" Source="YaraRules\Persistence_Registry.yar" />
+        <File Id="CredentialRule" Source="YaraRules\Credential_Dumper.yar" />
+        <File Id="BackdoorRule" Source="YaraRules\Backdoor_Detection.yar" />
+        <File Id="PhishingRule" Source="YaraRules\Phishing_Detection.yar" />
+      </Component>
+      
+      <!-- Composants pour les templates -->
+      <Component Id="TemplatesComponent" Directory="TemplatesDir" Guid="*">
+        <File Id="ReportTemplate" Source="Templates\report_template.html" KeyPath="yes" />
+        <!-- Autres templates -->
+      </Component>
+      
+      <!-- Composants pour la documentation -->
+      <Component Id="DocsComponent" Directory="DocsDir" Guid="*">
+        <File Id="UserGuide" Source="Docs\guide_utilisation.md" KeyPath="yes" />
+        <File Id="InstallGuide" Source="Docs\guide_installation.md" />
+        <!-- Autres documents -->
+      </Component>
+    </ComponentGroup>
+    
+    <ComponentGroup Id="ProductShortcuts" Directory="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="IRIS-Forensic X" 
+                  Description="Outil d'analyse forensique avancé"
+                  Target="[#IRISForensicXExe]"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <Shortcut Id="UninstallShortcut"
+                  Name="Désinstaller IRIS-Forensic X"
+                  Description="Désinstalle IRIS-Forensic X"
+                  Target="[SystemFolder]msiexec.exe"
+                  Arguments="/x [ProductCode]" />
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\IRIS-Forensic X" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="DesktopShortcut" Guid="*" Directory="DesktopFolder">
+        <Shortcut Id="ApplicationDesktopShortcut" 
+                  Name="IRIS-Forensic X" 
+                  Description="Outil d'analyse forensique avancé"
+                  Target="[#IRISForensicXExe]"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKCU" Key="Software\IRIS-Forensic X" Name="desktop_shortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

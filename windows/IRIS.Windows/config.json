@@ -1,0 +1,66 @@
+{
+  "Application": {
+    "Name": "IRIS-Forensic X",
+    "Version": "1.0.0",
+    "LogLevel": "Info"
+  },
+  "Paths": {
+    "CoreCLI": "%APPDATA%\\IRIS-Forensic-X\\CoreCLI",
+    "AIModels": "%APPDATA%\\IRIS-Forensic-X\\AIModels",
+    "YaraRules": "%APPDATA%\\IRIS-Forensic-X\\YaraRules",
+    "Reports": "%APPDATA%\\IRIS-Forensic-X\\Reports",
+    "Templates": "%APPDATA%\\IRIS-Forensic-X\\Templates"
+  },
+  "Analysis": {
+    "DefaultVmdkAnalysisOptions": {
+      "UseAI": true,
+      "UseYara": true,
+      "ScanForMalware": true,
+      "ScanForRansomware": true,
+      "ScanForPhishing": true,
+      "ScanForBackdoors": true,
+      "GenerateReport": true
+    },
+    "DefaultLogAnalysisOptions": {
+      "UseAI": true,
+      "UseYara": true,
+      "ScanForMalware": true,
+      "ScanForRansomware": true,
+      "ScanForPhishing": true,
+      "ScanForBackdoors": true,
+      "GenerateReport": true
+    },
+    "DefaultCsvAnalysisOptions": {
+      "UseAI": true,
+      "UseYara": false,
+      "ScanForMalware": true,
+      "ScanForRansomware": true,
+      "ScanForPhishing": true,
+      "ScanForBackdoors": true,
+      "GenerateReport": true
+    }
+  },
+  "Blockchain": {
+    "Enabled": true,
+    "Provider": "Hyperledger",
+    "NetworkUrl": "http://localhost:8545",
+    "ContractAddress": "0x0000000000000000000000000000000000000000"
+  },
+  "AI": {
+    "Enabled": true,
+    "ModelPath": "%APPDATA%\\IRIS-Forensic-X\\AIModels\\threat_detection.onnx",
+    "ConfidenceThreshold": 0.75
+  },
+  "Yara": {
+    "Enabled": true,
+    "ExecutablePath": "%APPDATA%\\IRIS-Forensic-X\\bin\\yara.exe",
+    "RulesPath": "%APPDATA%\\IRIS-Forensic-X\\YaraRules"
+  },
+  "Report": {
+    "DefaultFormat": "HTML",
+    "IncludeThreatDetails": true,
+    "IncludeTimeline": true,
+    "IncludeBlockchainProof": true,
+    "TemplatePath": "%APPDATA%\\IRIS-Forensic-X\\Templates\\report_template.html"
+  }
+}
