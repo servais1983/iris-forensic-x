@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IRIS.Models;
@@ -381,7 +382,7 @@ namespace IRIS.Services
                         Name = "Persistence_Registry",
                         Description = "Détecte les modifications de registre pour la persistance",
                         Author = "IRIS-Forensic X",
-                        Severity = 4,
+                        Severity = 3,
                         Tags = new List<string> { "persistence", "registry", "startup" },
                         IsEnabled = true,
                         CreatedDate = DateTime.Now,
@@ -389,11 +390,11 @@ namespace IRIS.Services
                     },
                     new YaraRule
                     {
-                        Name = "Credential_Dumper",
-                        Description = "Détecte les outils d'extraction de credentials",
+                        Name = "Phishing_Credentials",
+                        Description = "Détecte les tentatives de phishing pour vol d'identifiants",
                         Author = "IRIS-Forensic X",
                         Severity = 4,
-                        Tags = new List<string> { "credential", "mimikatz", "lsass" },
+                        Tags = new List<string> { "phishing", "credentials", "theft" },
                         IsEnabled = true,
                         CreatedDate = DateTime.Now,
                         ModifiedDate = DateTime.Now
@@ -405,216 +406,7 @@ namespace IRIS.Services
             }
             catch (Exception ex)
             {
-                _logService.LogError($"Erreur lors de l'analyse YARA du VMDK {vmdkPath}: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Crée des règles YARA par défaut
-        /// </summary>
-        public void CreateDefaultRules()
-        {
-            try
-            {
-                _logService.LogInfo("Création des règles YARA par défaut");
-                
-                // Règle pour détecter LockBit 3.0
-                var lockbitRule = new YaraRule
-                {
-                    Name = "LockBit_Ransomware",
-                    Description = "Détecte les signatures du ransomware LockBit 3.0",
-                    Author = "IRIS-Forensic X",
-                    Severity = 5,
-                    Tags = new List<string> { "ransomware", "lockbit", "encryption" },
-                    IsEnabled = true,
-                    Content = @"
-rule LockBit_Ransomware : ransomware lockbit encryption
-{
-    meta:
-        description = ""Détecte les signatures du ransomware LockBit 3.0""
-        author = ""IRIS-Forensic X""
-        severity = ""5""
-        date = ""2025-04-26""
-        
-    strings:
-        $lockbit_str1 = ""LockBit"" nocase
-        $lockbit_str2 = "".lockbit"" nocase
-        $lockbit_str3 = ""restore-my-files.txt"" nocase
-        $lockbit_note = ""All your important files are encrypted"" nocase
-        $lockbit_ext = { 2E 6C 6F 63 6B 62 69 74 }  // .lockbit in hex
-        $encryption1 = { 83 F8 00 74 ?? 8B ?? 24 ?? 8B ?? 89 ?? 24 ?? E8 }
-        $encryption2 = { 0F B6 ?? 83 E? 0F 83 F? 09 76 ?? 8D ?? 57 EB ?? 8D ?? 30 }
-        
-    condition:
-        uint16(0) == 0x5A4D and
-        2 of ($lockbit_str*) and
-        (1 of ($lockbit_note, $lockbit_ext) or all of ($encryption*))
-}"
-                };
-                
-                // Règle pour détecter la persistance
-                var persistenceRule = new YaraRule
-                {
-                    Name = "Persistence_Registry",
-                    Description = "Détecte les modifications de registre pour la persistance",
-                    Author = "IRIS-Forensic X",
-                    Severity = 4,
-                    Tags = new List<string> { "persistence", "registry", "startup" },
-                    IsEnabled = true,
-                    Content = @"
-rule Persistence_Registry : persistence registry startup
-{
-    meta:
-        description = ""Détecte les modifications de registre pour la persistance""
-        author = ""IRIS-Forensic X""
-        severity = ""4""
-        date = ""2025-04-26""
-        
-    strings:
-        $reg_run1 = ""\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"" nocase
-        $reg_run2 = ""\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce"" nocase
-        $reg_run3 = ""\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved"" nocase
-        $reg_run4 = ""\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Startup"" nocase
-        $schtasks = ""schtasks /create"" nocase
-        $wmic = ""wmic /create"" nocase
-        $startup_folder = ""\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"" nocase
-        
-    condition:
-        2 of them
-}"
-                };
-                
-                // Règle pour détecter les outils d'extraction de credentials
-                var credentialRule = new YaraRule
-                {
-                    Name = "Credential_Dumper",
-                    Description = "Détecte les outils d'extraction de credentials",
-                    Author = "IRIS-Forensic X",
-                    Severity = 4,
-                    Tags = new List<string> { "credential", "mimikatz", "lsass" },
-                    IsEnabled = true,
-                    Content = @"
-rule Credential_Dumper : credential mimikatz lsass
-{
-    meta:
-        description = ""Détecte les outils d'extraction de credentials""
-        author = ""IRIS-Forensic X""
-        severity = ""4""
-        date = ""2025-04-26""
-        
-    strings:
-        $mimikatz1 = ""mimikatz"" nocase
-        $mimikatz2 = ""mimilib"" nocase
-        $mimikatz3 = ""sekurlsa"" nocase
-        $mimikatz4 = ""kerberos"" nocase
-        $lsass1 = ""lsass.exe"" nocase
-        $lsass2 = ""lsasrv"" nocase
-        $lsass3 = ""wdigest"" nocase
-        $lsass4 = ""livessp"" nocase
-        $dump1 = ""procdump"" nocase
-        $dump2 = ""dumpert"" nocase
-        $dump3 = ""ProcessDump"" nocase
-        $technique1 = ""sekurlsa::logonpasswords"" nocase
-        $technique2 = ""privilege::debug"" nocase
-        
-    condition:
-        (2 of ($mimikatz*) and 1 of ($technique*)) or
-        (2 of ($lsass*) and 1 of ($dump*))
-}"
-                };
-                
-                // Règle pour détecter les backdoors
-                var backdoorRule = new YaraRule
-                {
-                    Name = "Backdoor_Detection",
-                    Description = "Détecte les backdoors et shells distants",
-                    Author = "IRIS-Forensic X",
-                    Severity = 5,
-                    Tags = new List<string> { "backdoor", "shell", "remote" },
-                    IsEnabled = true,
-                    Content = @"
-rule Backdoor_Detection : backdoor shell remote
-{
-    meta:
-        description = ""Détecte les backdoors et shells distants""
-        author = ""IRIS-Forensic X""
-        severity = ""5""
-        date = ""2025-04-26""
-        
-    strings:
-        $shell1 = ""cmd.exe"" nocase
-        $shell2 = ""powershell.exe"" nocase
-        $shell3 = ""bash.exe"" nocase
-        $shell4 = ""sh.exe"" nocase
-        $connect1 = ""socket"" nocase
-        $connect2 = ""connect("" nocase
-        $connect3 = ""WSAConnect"" nocase
-        $connect4 = ""InternetOpen"" nocase
-        $payload1 = ""reverse shell"" nocase
-        $payload2 = ""bind shell"" nocase
-        $payload3 = ""meterpreter"" nocase
-        $payload4 = ""netcat"" nocase
-        $payload5 = ""nc.exe"" nocase
-        
-    condition:
-        (1 of ($shell*) and 1 of ($connect*)) or
-        (1 of ($payload*) and 1 of ($connect*))
-}"
-                };
-                
-                // Règle pour détecter le phishing
-                var phishingRule = new YaraRule
-                {
-                    Name = "Phishing_Detection",
-                    Description = "Détecte les indicateurs de phishing",
-                    Author = "IRIS-Forensic X",
-                    Severity = 3,
-                    Tags = new List<string> { "phishing", "email", "social" },
-                    IsEnabled = true,
-                    Content = @"
-rule Phishing_Detection : phishing email social
-{
-    meta:
-        description = ""Détecte les indicateurs de phishing""
-        author = ""IRIS-Forensic X""
-        severity = ""3""
-        date = ""2025-04-26""
-        
-    strings:
-        $subject1 = ""urgent"" nocase
-        $subject2 = ""password reset"" nocase
-        $subject3 = ""account verification"" nocase
-        $subject4 = ""suspicious activity"" nocase
-        $subject5 = ""security alert"" nocase
-        $content1 = ""click here"" nocase
-        $content2 = ""verify your account"" nocase
-        $content3 = ""update your information"" nocase
-        $content4 = ""confirm your identity"" nocase
-        $content5 = ""your account will be suspended"" nocase
-        $domain1 = "".tk"" nocase
-        $domain2 = "".top"" nocase
-        $domain3 = "".xyz"" nocase
-        $domain4 = "".ml"" nocase
-        
-    condition:
-        (2 of ($subject*) and 2 of ($content*)) or
-        (1 of ($subject*) and 1 of ($content*) and 1 of ($domain*))
-}"
-                };
-                
-                // Sauvegarde des règles
-                SaveRule(lockbitRule);
-                SaveRule(persistenceRule);
-                SaveRule(credentialRule);
-                SaveRule(backdoorRule);
-                SaveRule(phishingRule);
-                
-                _logService.LogInfo("Règles YARA par défaut créées avec succès");
-            }
-            catch (Exception ex)
-            {
-                _logService.LogError($"Erreur lors de la création des règles YARA par défaut: {ex.Message}");
+                _logService.LogError($"Erreur lors de l'analyse YARA du fichier VMDK {vmdkPath}: {ex.Message}");
                 throw;
             }
         }
