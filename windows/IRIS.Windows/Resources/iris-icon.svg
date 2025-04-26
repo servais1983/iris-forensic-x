@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>IRIS-Forensic X Icon</title>
+    <g id="Icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#2C3E50" cx="128" cy="128" r="128"></circle>
+        <g id="Iris" transform="translate(48.000000, 48.000000)">
+            <circle id="Outer-Ring" stroke="#3498DB" stroke-width="8" cx="80" cy="80" r="76"></circle>
+            <circle id="Middle-Ring" stroke="#E74C3C" stroke-width="6" cx="80" cy="80" r="60"></circle>
+            <circle id="Inner-Ring" stroke="#2ECC71" stroke-width="4" cx="80" cy="80" r="44"></circle>
+            <circle id="Center" fill="#F1C40F" cx="80" cy="80" r="20"></circle>
+            <path d="M140,140 L160,160" id="Magnifier-Handle" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"></path>
+            <path d="M20,20 L40,40 M140,20 L120,40 M20,140 L40,120" id="X-Pattern" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"></path>
+        </g>
+    </g>
+</svg>

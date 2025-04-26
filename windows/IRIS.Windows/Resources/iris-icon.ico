@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="256" height="256" viewBox="0 0 256 256">
+  <g>
+    <circle cx="128" cy="128" r="128" fill="#2C3E50"/>
+    <g transform="translate(48, 48)">
+      <circle cx="80" cy="80" r="76" stroke="#3498DB" stroke-width="8" fill="none"/>
+      <circle cx="80" cy="80" r="60" stroke="#E74C3C" stroke-width="6" fill="none"/>
+      <circle cx="80" cy="80" r="44" stroke="#2ECC71" stroke-width="4" fill="none"/>
+      <circle cx="80" cy="80" r="20" fill="#F1C40F"/>
+      <path d="M140,140 L160,160" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+      <path d="M20,20 L40,40 M140,20 L120,40 M20,140 L40,120" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

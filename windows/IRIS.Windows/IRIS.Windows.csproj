@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>Resources\iris-icon.ico</ApplicationIcon>
+    <AssemblyName>IRIS-Forensic-X</AssemblyName>
+    <RootNamespace>IRIS.Windows</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\iris-icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\iris-icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IRIS.Models\IRIS.Models.csproj" />
+    <ProjectReference Include="..\IRIS.Services\IRIS.Services.csproj" />
+    <ProjectReference Include="..\IRIS.ViewModels\IRIS.ViewModels.csproj" />
+    <ProjectReference Include="..\IRIS.Views\IRIS.Views.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+</Project>
